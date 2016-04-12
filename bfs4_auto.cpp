@@ -213,6 +213,7 @@ int main (int argc, char** argv) {
  
   ifstream fs;
   
+  // read graph
   fs.open(argv[1]); // graph
   fs >> n >> m; // n, m are global
   adj_list.resize(n, vector<int>(2*m/n)); // avg degree
@@ -225,6 +226,21 @@ int main (int argc, char** argv) {
   fs.close();
   //cout << "done reading file\n";
   
+
+  fstream updatefs; 
+  updatefs.open(argv[3]);
+  float ratio2;
+  float ratio3;
+  int r;
+  while (updatefs >> r >> edge_bfil_arr_size >> edge_bfil_num_hash >> bfs_bfil_arr_size >> bfs_bfil_num_hash >> ratio2 >> ratio3) {
+    //cout << r << " " << edge_bfil_arr_size << " " << edge_bfil_num_hash << " " << bfs_bfil_arr_size << " " << bfs_bfil_num_hash << " " << ratio2  << " "  << ratio3 << endl;  
+  }; // read till end
+    
+  
+  updatefs.close();
+  
+  
+
   BinaryBloomFilter* edge_store_bf = new BinaryBloomFilter(edge_bfil_arr_size, edge_bfil_num_hash, NUMW); 
 	//int u, v;
 	
@@ -233,25 +249,43 @@ int main (int argc, char** argv) {
       edge_store_bf->add(i, adj_list[i-1][j-1]); // add edges to BF from adj_list
   }
   
-  vector<int> rand_list = *generate_random_num_list(10);
+  fs.open(argv[2]); // random numbers list
+  int r2;
+  vector<int> rand_list = vector<int> ();
+  while(fs >> r2) {
+    rand_list.push_back(r2);
+  }
+  fs.close();
+  vector<int>::iterator it = find(rand_list.begin(), rand_list.end(), r);
+  //vector<int> rand_list = *generate_random_num_list(10);
+  int l;
+  int b2, p2 = 0, q2 = 0; // b: bfs out; p: correct result; q: total
+  int b3, p3 = 0, q3 = 0; // b: bfs out; p: correct result; q: total
+  
+  int* bfs_out_0 = BFS0(r);
+  BloomFilter* bfs_out_3;
+  BloomFilter* bfs_out_2; 
+  
+  updatefs.open(argv[3], ofstream::out | ofstream::app);
   goto this_point;
-  for (vector<int>::iterator it = rand_list.begin(); it != rand_list.end(); it++) {
-    int r = *it;
+  for (; it != rand_list.end(); it++) {
+    r = *it;
+   
     //cout << "r: " << r << endl;
-    int* bfs_out_0 = BFS0(r);
+    bfs_out_0 = BFS0(r);
     for(edge_bfil_arr_size = 100; edge_bfil_arr_size <= 10000; edge_bfil_arr_size += 400) {
       for(edge_bfil_num_hash = 1; edge_bfil_num_hash <= 10; edge_bfil_num_hash += 2) {
 	//fs.open(argv[1]); // graph
 	//int m;
 	//fs >> n >> m; // n is global
 	//cout  << "n:" << n;
-	BinaryBloomFilter* edge_store_bf = new BinaryBloomFilter(edge_bfil_arr_size, edge_bfil_num_hash, NUMW); 
+	edge_store_bf = new BinaryBloomFilter(edge_bfil_arr_size, edge_bfil_num_hash, NUMW); 
 	//int u, v;
 	
 	for (int i = 1; i <= n; i++) { // m
 	  for (int j = 0; j < adj_list[i-1].size(); j++)
 	    edge_store_bf->add(i, adj_list[i-1][j-1]); // add edges to BF from adj_list
-	}
+	  ;}
 	//fs.close();
 	//cout << "done reading file\nrunning bfs\n";
      
@@ -260,17 +294,17 @@ int main (int argc, char** argv) {
 	    
 	    // bfs result in bloomfilter
 	    
-	    BloomFilter* bfs_out_3 = BFS3(r);
-	    BloomFilter* bfs_out_2 = BFS2(edge_store_bf, r); 
+	    bfs_out_3 = BFS3(r);
+	    bfs_out_2 = BFS2(edge_store_bf, r); 
 	    //cout << "done bfs\n";
 	    
-	    //fs.open(argv[2]); // testcase file
+	    //fs.open(argv[]); // testcase file
 	    //int t, h; // test node, real h
-	    int b2, p2 = 0, q2 = 0; // b: bfs out; p: correct result; q: total
-	    int b3, p3 = 0, q3 = 0; // b: bfs out; p: correct result; q: total
+	    b2 = 0; p2 = 0; q2 = 0; // b: bfs out; p: correct result; q: total
+	    b3 = 0; p3 = 0, q3 = 0; // b: bfs out; p: correct result; q: total
 	    
 	    //while (fs >> t >> h) {
-	    int l = nodes.size();
+	    l = nodes.size();
 	    for(int i = 0; i < l; i++) {
 	      q2++; q3++;
 	      b2 = bfs_out_2->check(nodes[i]);
@@ -281,12 +315,12 @@ int main (int argc, char** argv) {
 		p3++;
 	      //cout << nodes[i] << " " << b << " " << dists[i] << endl;
 	    }
-	    float ratio2 = p2/(float)q2;
-	    float ratio3 = p3/(float)q3;
+	    ratio2 = p2/(float)q2;
+	    ratio3 = p3/(float)q3;
 	    //cout << "total: " << q << "; correct: " << p << " ; ratio: " << ratio << endl;
-	    cout << edge_bfil_arr_size << " " << edge_bfil_num_hash << " " << bfs_bfil_arr_size << " " << bfs_bfil_num_hash << " " << ratio2  << " "  << ratio3 << endl;
+	    updatefs << r << " " << edge_bfil_arr_size << " " << edge_bfil_num_hash << " " << bfs_bfil_arr_size << " " << bfs_bfil_num_hash << " " << ratio2  << " "  << ratio3 << endl;
 	    //fs.close();
-	    
+	    //cout << r << " " << edge_bfil_arr_size << " " << edge_bfil_num_hash << " " << bfs_bfil_arr_size << " " << bfs_bfil_num_hash << " " << ratio2  << " "  << ratio3 << endl;  
 	    
 	    delete bfs_out_2;
 	    delete bfs_out_3;
@@ -298,10 +332,9 @@ int main (int argc, char** argv) {
 	//break;
       }
     }
-    return 0;
-    
     nodes.clear();
     dists.clear();
   }
-  
+  updatefs.close();
+  return 0;
 }

@@ -289,10 +289,10 @@ int main (int argc, char** argv) {
 	//break;
       }
     }
-    return 0;
     
     nodes.clear();
     dists.clear();
   }
-  
+  return 0;
+    
 }

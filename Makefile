@@ -37,6 +37,11 @@ bfs2_auto: bfs2_auto.o bloom.o MurmurHash2.o
 bfs2_auto.o: bfs2_auto.cpp
 	g++ -g -c bfs2_auto.cpp
 
+bfs4_auto: bfs4_auto.o bloom.o MurmurHash2.o
+	g++ -g -o bfs4_auto bfs4_auto.o bloom.o MurmurHash2.o
+
+bfs4_auto.o: bfs4_auto.cpp
+	g++ -g -c bfs4_auto.cpp
 
 
 bipartite_truth: bipartite_truth.o bloom.o MurmurHash2.o
