@@ -50,6 +50,19 @@ bipartite_truth: bipartite_truth.o bloom.o MurmurHash2.o
 bipartite_truth.o: bipartite_truth.cpp
 	g++ -g -c bipartite_truth.cpp
 
+bipartite: bipartite.o bloom.o MurmurHash2.o
+	g++ -g -o bipartite bipartite.o bloom.o MurmurHash2.o
+
+bipartite.o: bipartite.cpp
+	g++ -g -c bipartite.cpp
+
+bipartite_auto: bipartite_auto.o bloom.o MurmurHash2.o
+	g++ -g -o bipartite_auto bipartite_auto.o bloom.o MurmurHash2.o
+
+bipartite_auto.o: bipartite_auto.cpp
+	g++ -g -c bipartite_auto.cpp
+
+
 
 bfs_truth: bfs_truth.o bloom.o MurmurHash2.o
 	g++ -g -o bfs_truth bfs_truth.o bloom.o MurmurHash2.o

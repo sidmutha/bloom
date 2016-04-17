@@ -232,6 +232,11 @@ int main (int argc, char** argv) {
   float ratio2;
   float ratio3;
   int r;
+  edge_bfil_arr_size = 100;
+  edge_bfil_num_hash = 2;
+  bfs_bfil_arr_size = 100;
+  bfs_bfil_num_hash = 2;
+
   while (updatefs >> r >> edge_bfil_arr_size >> edge_bfil_num_hash >> bfs_bfil_arr_size >> bfs_bfil_num_hash >> ratio2 >> ratio3) {
     //cout << r << " " << edge_bfil_arr_size << " " << edge_bfil_num_hash << " " << bfs_bfil_arr_size << " " << bfs_bfil_num_hash << " " << ratio2  << " "  << ratio3 << endl;  
   }; // read till end
@@ -273,8 +278,8 @@ int main (int argc, char** argv) {
    
     //cout << "r: " << r << endl;
     bfs_out_0 = BFS0(r);
-    for(edge_bfil_arr_size = 100; edge_bfil_arr_size <= 10000; edge_bfil_arr_size += 400) {
-      for(edge_bfil_num_hash = 1; edge_bfil_num_hash <= 10; edge_bfil_num_hash += 2) {
+    for(edge_bfil_arr_size = 100; edge_bfil_arr_size <= 10000; edge_bfil_arr_size += 1000) {
+      for(edge_bfil_num_hash = 2; edge_bfil_num_hash <= 10; edge_bfil_num_hash += 2) {
 	//fs.open(argv[1]); // graph
 	//int m;
 	//fs >> n >> m; // n is global
@@ -289,8 +294,8 @@ int main (int argc, char** argv) {
 	//fs.close();
 	//cout << "done reading file\nrunning bfs\n";
      
-	for(bfs_bfil_arr_size = 100; bfs_bfil_arr_size <= 10000; bfs_bfil_arr_size += 200) {
-	  for(bfs_bfil_num_hash = 1; bfs_bfil_num_hash <= 10; bfs_bfil_num_hash += 2) {
+	for(bfs_bfil_arr_size = 100; bfs_bfil_arr_size <= 10000; bfs_bfil_arr_size += 500) {
+	  for(bfs_bfil_num_hash = 2; bfs_bfil_num_hash <= 10; bfs_bfil_num_hash += 2) {
 	    
 	    // bfs result in bloomfilter
 	    
