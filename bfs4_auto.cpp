@@ -262,11 +262,11 @@ int main (int argc, char** argv) {
       edge_store_bf->add(i, adj_list[i-1][j-1]); // add edges to BF from adj_list
   }
   
-  /*vector<int>::iterator it = find(rand_list.begin(), rand_list.end(), r);
+  vector<int>::iterator it = find(rand_list.begin(), rand_list.end(), r);
   if (it == rand_list.end()) 
     it = rand_list.begin();
-  */
-  vector<int>::iterator it = rand_list.begin();
+  
+  // vector<int>::iterator it = rand_list.begin();
   r = *it;
   cout << r << endl;
   //vector<int> rand_list = *generate_random_num_list(10);
