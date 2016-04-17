@@ -261,9 +261,12 @@ int main (int argc, char** argv) {
     rand_list.push_back(r2);
   }
   fs.close();
-  vector<int>::iterator it = find(rand_list.begin(), rand_list.end(), r);
+  /*vector<int>::iterator it = find(rand_list.begin(), rand_list.end(), r);
   if (it == rand_list.end()) 
     it = rand_list.begin();
+  */
+  vector<int>::iterator it = rand_list.begin();
+  cout << *it;
   //vector<int> rand_list = *generate_random_num_list(10);
   int l;
   int b2, p2 = 0, q2 = 0; // b: bfs out; p: correct result; q: total
