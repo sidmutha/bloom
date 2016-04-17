@@ -48,6 +48,7 @@ bool colourify (int* colours, int v, int c) {
   return true;
 }
 
+
 bool isBipartite () {
   int* colours = new int[n]();
   for (int i = 1; i <= n; i++) {
