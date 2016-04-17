@@ -210,8 +210,16 @@ int main (int argc, char** argv) {
   //cout << argc << endl;
   nodes = vector<int>();
   dists = vector<int>();
- 
+  
   ifstream fs;
+  fs.open(argv[2]); // random numbers list
+  int r2;
+  vector<int> rand_list = vector<int> ();
+  while(fs >> r2) {
+    rand_list.push_back(r2);
+    cout << r2 << endl;
+  }
+  fs.close();
   
   // read graph
   fs.open(argv[1]); // graph
@@ -254,19 +262,13 @@ int main (int argc, char** argv) {
       edge_store_bf->add(i, adj_list[i-1][j-1]); // add edges to BF from adj_list
   }
   
-  fs.open(argv[2]); // random numbers list
-  int r2;
-  vector<int> rand_list = vector<int> ();
-  while(fs >> r2) {
-    rand_list.push_back(r2);
-  }
-  fs.close();
   /*vector<int>::iterator it = find(rand_list.begin(), rand_list.end(), r);
   if (it == rand_list.end()) 
     it = rand_list.begin();
   */
   vector<int>::iterator it = rand_list.begin();
-  cout << *it;
+  r = *it;
+  cout << r << endl;
   //vector<int> rand_list = *generate_random_num_list(10);
   int l;
   int b2, p2 = 0, q2 = 0; // b: bfs out; p: correct result; q: total
