@@ -1,10 +1,17 @@
 all: bloomtest
 
 bloomtest: bloomtest.o bloom.o MurmurHash2.o
-	g++ -g -o bloomtest bloomtest.o bloom.o MurmurHash2
+	g++ -g -o bloomtest bloomtest.o bloom.o MurmurHash2.o
 
 bloomtest.o: bloomtest.cpp
 	g++ -g -c bloomtest.cpp
+
+bloomtest2: bloomtest2.o bloom.o MurmurHash2.o
+	g++ -g -o bloomtest2 bloomtest2.o bloom.o MurmurHash2.o
+
+bloomtest2.o: bloomtest2.cpp
+	g++ -g -c bloomtest2.cpp
+
 
 bfs: bfs.o bloom.o MurmurHash2.o
 	g++ -g -o bfs bfs.o bloom.o MurmurHash2.o
