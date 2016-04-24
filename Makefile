@@ -13,6 +13,12 @@ bloomtest2.o: bloomtest2.cpp
 	g++ -g -c bloomtest2.cpp
 
 
+bloomgraph: bloomgraph.o bloom.o MurmurHash2.o
+	g++ -g -o bloomgraph bloomgraph.o bloom.o MurmurHash2.o
+
+bloomgraph.o: bloomgraph.cpp
+	g++ -g -c bloomgraph.cpp
+
 bfs: bfs.o bloom.o MurmurHash2.o
 	g++ -g -o bfs bfs.o bloom.o MurmurHash2.o
 
