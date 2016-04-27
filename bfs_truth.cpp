@@ -2,6 +2,7 @@
 #include <vector>
 #include <queue>
 #include <fstream>
+#include <cstdlib>
 #include "bloom.h"
 
 using namespace std;
@@ -45,11 +46,11 @@ int* BFS (int v) {
   return visited;
 }
 
-int main (int argv, char** argc) {
+int main (int argc, char** argv) {
   
   ifstream fs;
   
-  fs.open(argc[1]); // graph
+  fs.open(argv[1]); // graph
   
   int m;
   
@@ -65,16 +66,17 @@ int main (int argv, char** argc) {
   fs.close();
   //cout << "done reading file\n";
   
-  int* bfs_out = BFS(1);
+  int* bfs_out = BFS(atoi(argv[2]));
   
+  /*
   fs.open(argc[2]); // testcase file
   int t; // test node
   //cout << "testcase\n";
   /*while(fs >> t){
     cout << bfs_out[t-1] << endl;
-    }*/
+    }
   //cout << bfs_out[233751-1];
   fs.close();
-  
+  */
   return 0;
 }

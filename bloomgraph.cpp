@@ -64,8 +64,7 @@ int main (int argc, char** argv) {
 	
 	cout <<  num_vertices << " " << m << " " << k 
 	     << " " << t << " " << t1 << " " << t1-t << endl;
-	//return 0;
-      }
+      };
     }
   }
   

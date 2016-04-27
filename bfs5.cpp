@@ -3,6 +3,7 @@
 #include <queue>
 #include <fstream>
 #include <cstdlib>
+#include <cmath>
 #include <algorithm>
 #include "bloom.h"
 
@@ -70,8 +71,75 @@ void get_adjacent (int v, BinaryBloomFilter* bf, vector<int> &adj_vec) {
   }
 }
 
+// graph in adj-matrix and result in array 
+// pretty similar to BFS0 
+int* BFS3_2 (int s, int **adj_mat) {
+  cout << "running bfs3_2\n";
+  int h = 1;
+  queue<int> q;
+  //BloomFilter* bf = new BloomFilter(bfs_bfil_arr_size, bfs_bfil_num_hash, NUMW); // stores output of bfs
+  int* visited = new int[n]();
+  q.push(s);
+  visited[s-1] = h;
 
-// simple BFS on edges stored in bf
+  while (!q.empty()) {
+    int f = q.front();
+    h++;
+    for (int i = 0; i < n; i++) {
+      int c = adj_mat[f][i];
+      if (c != 0) {
+	if (visited[c-1] == 0) { // not visited
+	  visited[c-1] = h;
+	  q.push(c);
+	}
+      }
+      // directed / undirected?
+    }
+    q.pop();
+  }
+  cout << "done\n";
+  //cout << "#" << h << endl;
+  return visited;
+}
+
+
+// graph in BF, result in array
+int* BFS2_2 (BinaryBloomFilter* edge_store_bbf, int v) {
+  vector<int> adj_vec = vector<int>();
+  
+  int h = 1;
+  queue<int> q;
+  //BloomFilter* bf = new BloomFilter(bfs_bfil_arr_size, bfs_bfil_num_hash, NUMW); // stores output of bfs
+  int* visited = new int[n];
+  q.push(v);
+  visited[v-1] = h; // visited
+  
+  while (!q.empty()) {
+    int f = q.front();
+    h++;
+    get_adjacent(f, edge_store_bbf, adj_vec);
+    //cout << "#" << h << endl;
+    //cout << "v:" << adj_vec.size();
+    for (int i = 0; i < adj_vec.size(); i++) {
+      int c = adj_vec[i];
+      //cout << c << endl;
+      if (visited[c-1] == 0) { // not visited
+	//cout << "ee\n";
+	visited[c-1] = h;
+	q.push(c);
+      }
+      // directed/undirected?
+    }
+    adj_vec.clear();
+    q.pop();
+  }
+  
+  return visited;
+}
+
+
+
+// simple BFS on edges stored in bf, result in BF
 BloomFilter* BFS2 (BinaryBloomFilter* edge_store_bbf, int v) {
   vector<int> adj_vec = vector<int>();
   
@@ -105,8 +173,10 @@ BloomFilter* BFS2 (BinaryBloomFilter* edge_store_bbf, int v) {
   return bf;
 }
 
+
+// graph in adj_list; result in BF
 BloomFilter* BFS3 (int n, vector < vector <int> >& adj_list) {
-  cout << "running bfs3\n";
+  //cout << "running bfs3\n";
   int h = 1;
   queue<int> q;
   BloomFilter* bf = new BloomFilter(bfs_bfil_arr_size, bfs_bfil_num_hash, NUMW); // stores output of bfs
@@ -117,8 +187,8 @@ BloomFilter* BFS3 (int n, vector < vector <int> >& adj_list) {
   while (!q.empty()) {
     int f = q.front();
     h++;
-    for (int i = 0; i < adj_list[f].size(); i++) {
-      int c = adj_list[f][i];
+    for (int i = 0; i < adj_list[f-1].size(); i++) {
+      int c = adj_list[f-1][i];
       if (bf->check(c) == -1) { // not visited
 	bf->add(c, h);
 	q.push(c);
@@ -127,10 +197,41 @@ BloomFilter* BFS3 (int n, vector < vector <int> >& adj_list) {
     }
     q.pop();
   }
-  cout << "done\7\n";
+  //cout << "done\7\n";
   //cout << "#" << h << endl;
   return bf;
 }
+
+// graph in adj_mat; result in BF
+BloomFilter* BFS3_3 (int s, int **adj_mat) {
+  //cout << "running bfs3_3\n";
+  int h = 1;
+  queue<int> q;
+  BloomFilter* bf = new BloomFilter(bfs_bfil_arr_size, bfs_bfil_num_hash, NUMW); // stores output of bfs
+ 
+  q.push(s);
+  bf->add(s, h); // visited
+
+  while (!q.empty()) {
+    int f = q.front();
+    h++;
+    for (int i = 0; i < n; i++) {
+      int c = adj_mat[f-1][i];
+      if (c != 0) {
+	if (bf->check(i+1) == -1) { // not visited
+	  bf->add(i+1, h);
+	  q.push(i+1);
+	}
+      }
+      // directed / undirected?
+    }
+    q.pop();
+  }
+  //cout << "done\7\n";
+  //cout << "#" << h << endl;
+  return bf;
+}
+
 
 void get_bf_graph_adjacency_list (BinaryBloomFilter* bf, vector < vector <int> > bf_adj_list) {
   cout << "populating bf_adj_list\7\n";
@@ -142,6 +243,20 @@ void get_bf_graph_adjacency_list (BinaryBloomFilter* bf, vector < vector <int> >
 	//cout << k++ << endl;
 	bf_adj_list[v-1].push_back(i);
       }
+    }
+  }
+  cout << "done\7\n";
+}
+
+
+void get_bf_graph_adjacency_matrix (BinaryBloomFilter* bf, int** adj_mat) {
+  cout << "populating bf_adj_mat\7\n";
+  //cout << n<< endl;
+  for(int v = 1; v <= n; v++) {
+    for (int i = 1; i <= n; i++) { // assumption: 1 indexed node numbers
+      //cout << "^";
+      //cout << k++ << endl;
+      adj_mat[v-1][i-1] = bf->check(v, i) != -1;
     }
   }
   cout << "done\7\n";
@@ -179,15 +294,17 @@ int main (int argc, char** argv) {
   // read graph
   fs.open(argv[1]); // graph
   fs >> n >> m; // n, m are global
-  adj_list.resize(n, vector<int>(2*m/n)); // avg degree
-  //cout << "reading file" << endl;
+  
+  //adj_list.resize(n, vector<int>(2*m/n)); // avg degree
+  adj_list.resize(n, vector<int>()); // avg degree
+  cout << "reading file" << endl;
   int u, v;
   for (int i = 0; i < m; i++) {
     fs >> u >> v;
     adj_list[u-1].push_back(v);
   }
   fs.close();
-  //cout << "done reading file\n";
+  cout << "done reading file\n";
   
 
   fstream updatefs; 
@@ -211,19 +328,28 @@ int main (int argc, char** argv) {
 
   BinaryBloomFilter* edge_store_bf = new BinaryBloomFilter(edge_bfil_arr_size, edge_bfil_num_hash, NUMW); 
   //int u, v;
+  cout << sizeof(int*) << endl;
   cout << "adding to edge bf\n";
-  for (int i = 1; i <= n; i++) { // m
-    for (int j = 0; j < adj_list[i-1].size(); j++)
-      edge_store_bf->add(i, adj_list[i-1][j-1]); // add edges to BF from adj_list
+  for (int i = 0; i < n; i++) { // m
+    for (int j = 0; j < adj_list[i].size(); j++)
+      edge_store_bf->add(i+1, adj_list[i][j]); // add edges to BF from adj_list
   }
-  
+  cout << "done adding to edge bf\n";
   // adj list for graph from edge_store_bf
-  vector < vector <int> > bf_adj_list;
-  bf_adj_list.resize(n, vector<int>(2*m/n)); // avg degree
+  //vector < vector <int> > bf_adj_list;
+  //bf_adj_list.resize(n, vector<int>(2*m/n)); // avg degree
+  cout << "creating matrix of size " << n << "\n";
+  int** bf_adj_mat = new int*[n];
+  for (int i = 0; i < n; i++) {
+    bf_adj_mat[i] = new int[n]();
+    //cout << i << endl;
+  }
+  cout << "done creating matrix\n";
+  //return 0;
+  get_bf_graph_adjacency_matrix(edge_store_bf, bf_adj_mat);
+  //return 0;
   
-  get_bf_graph_adjacency_list(edge_store_bf, bf_adj_list);
-
-
+  
   
   vector<int>::iterator it = find(rand_list.begin(), rand_list.end(), r);
   if (it == rand_list.end()) 
@@ -234,19 +360,28 @@ int main (int argc, char** argv) {
   cout << r << endl;
   //vector<int> rand_list = *generate_random_num_list(10);
   int l;
-  int b2, p2 = 0, q2 = 0; // b: bfs out; p: correct result; q: total
-  int b3, p3 = 0, q3 = 0; // b: bfs out; p: correct result; q: total
-  
+  float p2_2 = 0, q2_2 = 0; // b: bfs out; p: correct result; q: total
+  int b3, b3_3, b2_2;
+  float p3 = 0, q3 = 0; // b: bfs out; p: correct result; q: total
+  float p3_3 = 0, q3_3 = 0; // b: bfs out; p: correct result; q: total
+
   int* bfs_out_0 = BFS0(r);
+  int* bfs_out_2_2 = BFS2_2(edge_store_bf, r);
+  
+ 
+  
   BloomFilter* bfs_out_3;
-  BloomFilter* bfs_out_2; 
+  //BloomFilter* bfs_out_2; 
+  BloomFilter* bfs_out_3_3; 
   
   updatefs.open(argv[3], ofstream::out | ofstream::app);
+  
   goto this_point;
+  
   for (; it != rand_list.end(); it++) {
     r = *it;
    
-    //cout << "r: " << r << endl;
+    cout << "r: " << r << endl;
     bfs_out_0 = BFS0(r);
     for(edge_bfil_arr_size = 100; edge_bfil_arr_size <= 10000; edge_bfil_arr_size += 1000) {
       for(edge_bfil_num_hash = 2; edge_bfil_num_hash <= 10; edge_bfil_num_hash += 2) {
@@ -255,58 +390,94 @@ int main (int argc, char** argv) {
 	//fs >> n >> m; // n is global
 	//cout  << "n:" << n;
 	edge_store_bf = new BinaryBloomFilter(edge_bfil_arr_size, edge_bfil_num_hash, NUMW); 
-	for (int i = 0; i < bf_adj_list.size(); i++) 
-	  bf_adj_list[i].clear();
-	get_bf_graph_adjacency_list(edge_store_bf, bf_adj_list);
-	//int u, v;
+	// populating edge store bf
+	for (int i = 0; i < n; i++) { // m
+	  for (int j = 0; j < adj_list[i].size(); j++)
+	    edge_store_bf->add(i+1, adj_list[i][j]); // add edges to BF from adj_list
+	}
+
+
+	//for (int i = 0; i < bf_adj_list.size(); i++) 
+	//  bf_adj_list[i].clear();
+	get_bf_graph_adjacency_matrix(edge_store_bf, bf_adj_mat);
+
+	bfs_out_2_2 = BFS2_2(edge_store_bf, r); // bf-arr
 	
-	for (int i = 1; i <= n; i++) { // m
-	  for (int j = 0; j < adj_list[i-1].size(); j++)
-	    edge_store_bf->add(i, adj_list[i-1][j-1]); // add edges to BF from adj_list
-	  ;}
-	//fs.close();
-	//cout << "done reading file\nrunning bfs\n";
-     
-	for(bfs_bfil_arr_size = 100; bfs_bfil_arr_size <= 10000; bfs_bfil_arr_size += 500) {
-	  for(bfs_bfil_num_hash = 2; bfs_bfil_num_hash <= 10; bfs_bfil_num_hash += 2) {
+	for (bfs_bfil_arr_size = 100; bfs_bfil_arr_size <= 10000; bfs_bfil_arr_size += 500) {
+	  for (bfs_bfil_num_hash = 2; bfs_bfil_num_hash <= 10; bfs_bfil_num_hash += 2) {
 	    
 	    // bfs result in bloomfilter
 	    
-	    bfs_out_3 = BFS3(r, adj_list);
-	    //bfs_out_2 = BFS2(edge_store_bf, r); 
-	    bfs_out_2 = BFS3(r, bf_adj_list);
-	    //cout << "done bfs\n";
-	    
-	    //fs.open(argv[]); // testcase file
-	    //int t, h; // test node, real h
-	    b2 = 0; p2 = 0; q2 = 0; // b: bfs out; p: correct result; q: total
+	    bfs_out_3 = BFS3(r, adj_list); // adj_list-bf
+	    //bfs_out_2 = BFS2(edge_store_bf, r); // bf-bf
+	    bfs_out_3_3 = BFS3_3(r, bf_adj_mat); // (bf)matrix-bf
+	    //bfs_out_2_2 = BFS2_2(edge_store_bf, r); // bf-arr
+
+	    b2_2 = 0; p2_2 = 0; q2_2 = 0; // b: bfs out; p: correct result; q: total
 	    b3 = 0; p3 = 0, q3 = 0; // b: bfs out; p: correct result; q: total
+	    b3_3 = 0; p3_3 = 0, q3_3 = 0; // b: bfs out; p: correct result; q: total
 	    
-	    //while (fs >> t >> h) {
+	    
 	    l = nodes.size();
-	    for(int i = 0; i < l; i++) {
-	      q2++; q3++;
-	      b2 = bfs_out_2->check(nodes[i]);
-	      b3 = bfs_out_3->check(nodes[i]);
-	      if (b2 == dists[i]) 
-		p2++;
-	      if (b3 == dists[i]) 
-		p3++;
+	    for (int i = 0; i < l; i++) {
+	      int ni = nodes[i];
+	      int di = dists[i];
+	      
+	      b3_3 = bfs_out_3_3->check(ni);
+	      b3   = bfs_out_3->check(ni);
+	      b2_2 = bfs_out_2_2[ni-1];
+	      
+	      //cout << ni << " " << di << " " << b3 << endl;
+	      
+	      b3_3 = b3_3 != -1 ? b3_3 : di;
+	      b3   = b3   != -1 ? b3   : di;
+	      b2_2 = b2_2 !=  0 ? b2_2 : di;
+
+	      p3_3 += fabs(b3_3 - di);
+	      p3   += fabs(b3 - di);
+	      p2_2 += fabs(b2_2 - di);
+	      
+	      //cout << " " << p3_3 << endl;
 	      //cout << nodes[i] << " " << b << " " << dists[i] << endl;
 	    }
-	    ratio2 = p2/(float)q2;
-	    ratio3 = p3/(float)q3;
+	    //cout << l << endl;
+	    p3_3 /= l;
+	    p3   /= l;
+	    p2_2 /= l;
+	      
+	    //ratio2_2 = p2_2/(float)l;
+	    //ratio3 = p3/(float)l;
+	    //ratio3_3 = p3_3/(float)l;
 	    //cout << "total: " << q << "; correct: " << p << " ; ratio: " << ratio << endl;
-	    updatefs << r << " " << edge_bfil_arr_size << " " << edge_bfil_num_hash << " " << bfs_bfil_arr_size << " " << bfs_bfil_num_hash << " " << ratio2  << " "  << ratio3 << endl;
-	    //fs.close();
+	    updatefs << r 
+		     << " " << edge_bfil_arr_size 
+		     << " " << edge_bfil_num_hash 
+		     << " " << bfs_bfil_arr_size 
+		     << " " << bfs_bfil_num_hash 
+		     << " " << l
+		     << " " << p3_3  << " "  << p3 << " " << p2_2 
+		     << endl;
+	    
+	    cout     << r 
+		     << " " << edge_bfil_arr_size 
+		     << " " << edge_bfil_num_hash 
+		     << " " << bfs_bfil_arr_size 
+		     << " " << bfs_bfil_num_hash 
+		     << " " << l
+		     << " " << p3_3  << " "  << p3 << " " << p2_2 
+		     << endl;
+	    
+	    
+	    
 	    //cout << r << " " << edge_bfil_arr_size << " " << edge_bfil_num_hash << " " << bfs_bfil_arr_size << " " << bfs_bfil_num_hash << " " << ratio2  << " "  << ratio3 << endl;  
 	    
-	    delete bfs_out_2;
+
 	    delete bfs_out_3;
 	    //break;
 	  this_point:;
 	  }
 	}
+	delete bfs_out_2_2;
 	delete edge_store_bf;
 	//break;
       }

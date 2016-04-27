@@ -4,7 +4,7 @@ bloomtest: bloomtest.o bloom.o MurmurHash2.o
 	g++ -g -o bloomtest bloomtest.o bloom.o MurmurHash2.o
 
 bloomtest.o: bloomtest.cpp
-	g++ -g -c bloomtest.cpp
+	g++ -g -c bloomtest.ocpp
 
 bloomtest2: bloomtest2.o bloom.o MurmurHash2.o
 	g++ -g -o bloomtest2 bloomtest2.o bloom.o MurmurHash2.o
@@ -43,6 +43,13 @@ bfs4: bfs4.o bloom.o MurmurHash2.o
 
 bfs4.o: bfs4.cpp
 	g++ -g -c bfs4.cpp
+
+
+bfs5: bfs5.o bloom.o MurmurHash2.o
+	g++ -g -o bfs5 bfs5.o bloom.o MurmurHash2.o
+
+bfs5.o: bfs5.cpp
+	g++ -g -c bfs5.cpp
 
 bfs2_auto: bfs2_auto.o bloom.o MurmurHash2.o
 	g++ -g -o bfs2_auto bfs2_auto.o bloom.o MurmurHash2.o
