@@ -113,14 +113,14 @@ int main (int argc, char** argv) {
   int t;
 
   fstream updatefs; 
-  updatefs.open(argv[2]);
+  /*updatefs.open(argv[2]);
   while (updatefs >> n >> m >> edge_bfil_arr_size >> edge_bfil_num_hash >> t >> t >> t){
     //cout << r << " " << edge_bfil_arr_size << " " << edge_bfil_num_hash << " " << bfs_bfil_arr_size << " " << bfs_bfil_num_hash << " " << ratio2  << " "  << ratio3 << endl;  
   }; // read till end
-    
+  
   
   updatefs.close();
-  
+  */
   
   /*
   edge_store_bf = new BinaryBloomFilter(edge_bfil_arr_size, edge_bfil_num_hash, NUMW); 
@@ -133,7 +133,7 @@ int main (int argc, char** argv) {
   */
   
   
-  bool is_bipartite, real_bipartite = false;
+  bool is_bipartite, real_bipartite = true;
   
   updatefs.open(argv[2], ofstream::out | ofstream::app);
 
@@ -144,9 +144,9 @@ int main (int argc, char** argv) {
     for(edge_bfil_num_hash = 2; edge_bfil_num_hash <= 10; edge_bfil_num_hash += 2) {
       edge_store_bf = new BinaryBloomFilter(edge_bfil_arr_size, edge_bfil_num_hash, NUMW); 
       // populate bloom filter
-      for (int i = 1; i <= n; i++) { // m
-	for (int j = 0; j < adj_list[i-1].size(); j++)
-	  edge_store_bf->add(i, adj_list[i-1][j-1]); // add edges to BF from adj_list
+      for (int i = 0; i < n; i++) { // m
+	for (int j = 0; j < adj_list[i].size(); j++)
+	  edge_store_bf->add(i+1, adj_list[i][j]); // add edges to BF from adj_list
 	;}
 	
 	
